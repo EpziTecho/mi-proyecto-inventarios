@@ -1,56 +1,33 @@
-const pool = require("../config/database");
+// src/repositories/menu.repository.js
+const { Menu } = require("../models");
 
 const MenuRepository = {
     getAll: async () => {
-        const [rows] = await pool.query(`
-      SELECT id, nombre, descripcion
-      FROM menu
-    `);
-        return rows;
+        return await Menu.findAll();
     },
 
     getById: async (id) => {
-        const [rows] = await pool.query(
-            `
-      SELECT id, nombre, descripcion
-      FROM menu
-      WHERE id = ?
-    `,
-            [id]
-        );
-        return rows[0] || null;
+        return await Menu.findByPk(id);
     },
 
-    create: async (nombre, descripcion) => {
-        const [result] = await pool.query(
-            `
-      INSERT INTO menu (nombre, descripcion)
-      VALUES (?, ?)
-    `,
-            [nombre, descripcion]
-        );
-        return result.insertId;
+    create: async (data) => {
+        // data = { nombre, descripcion }
+        return await Menu.create(data);
     },
 
-    update: async (id, nombre, descripcion) => {
-        await pool.query(
-            `
-      UPDATE menu
-      SET nombre = ?, descripcion = ?
-      WHERE id = ?
-    `,
-            [nombre, descripcion, id]
-        );
+    update: async (id, data) => {
+        // Primero buscamos si existe
+        const menu = await Menu.findByPk(id);
+        if (!menu) return null;
+        await menu.update(data);
+        return menu;
     },
 
     delete: async (id) => {
-        await pool.query(
-            `
-      DELETE FROM menu
-      WHERE id = ?
-    `,
-            [id]
-        );
+        const menu = await Menu.findByPk(id);
+        if (!menu) return null;
+        await menu.destroy();
+        return menu;
     },
 };
 

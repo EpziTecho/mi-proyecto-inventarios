@@ -1,35 +1,27 @@
 const RolMenuRepository = require("../repositories/rolMenu.repository");
-const RolRepository = require("../repositories/rol.repository");
-const MenuRepository = require("../repositories/menu.repository");
 
 const RolMenuService = {
     obtenerMenusDeRol: async (idRol) => {
-        // Verificar que el rol exista
-        const rol = await RolRepository.getById(idRol);
-        if (!rol) {
-            throw new Error(`Rol con ID ${idRol} no existe`);
-        }
-        return await RolMenuRepository.getMenusByRol(idRol);
+        // Podrías usar RolMenuRepository.getMenusByRol(idRol)
+        // o, si lo implementaste así, Rol.findByPk(idRol, { include: Menu })
+        const menus = await RolMenuRepository.getMenusByRol(idRol);
+        return menus;
     },
 
-    agregarMenuARol: async (idRol, idmenu) => {
-        // Verificar rol
-        const rol = await RolRepository.getById(idRol);
-        if (!rol) {
-            throw new Error(`Rol con ID ${idRol} no existe`);
-        }
-        // Verificar menu
-        const menu = await MenuRepository.getById(idmenu);
-        if (!menu) {
-            throw new Error(`Menu con ID ${idmenu} no existe`);
-        }
-        await RolMenuRepository.addMenuToRol(idRol, idmenu);
-        return { message: `Menu ${idmenu} asociado al Rol ${idRol}` };
+    agregarMenuARol: async (idRol, idMenu) => {
+        // Insertar en la tabla pivote Rol_menu
+        return await RolMenuRepository.addMenuToRol(idRol, idMenu);
     },
 
-    eliminarMenuDeRol: async (idRol, idmenu) => {
-        await RolMenuRepository.removeMenuFromRol(idRol, idmenu);
-        return { message: `Menu ${idmenu} eliminado del Rol ${idRol}` };
+    eliminarMenuDeRol: async (idRol, idMenu) => {
+        // Eliminar la asociación N:M
+        const result = await RolMenuRepository.removeMenuFromRol(idRol, idMenu);
+        if (!result) {
+            throw new Error(
+                `No se encontró la asociación rol:${idRol}, menu:${idMenu}`
+            );
+        }
+        return true;
     },
 };
 

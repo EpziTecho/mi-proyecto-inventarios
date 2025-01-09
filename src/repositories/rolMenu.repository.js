@@ -1,40 +1,35 @@
-const pool = require("../config/database");
+// src/repositories/rolMenu.repository.js
+const { RolMenu, Rol, Menu } = require("../models");
 
 const RolMenuRepository = {
-    // Obtener todos los menús asociados a un rol
+    // Obtener menús por rol usando la tabla pivote
     getMenusByRol: async (idRol) => {
-        const [rows] = await pool.query(
-            `
-      SELECT m.id, m.nombre, m.descripcion
-      FROM Rol_menu rm
-      JOIN menu m ON rm.idmenu = m.id
-      WHERE rm.idRol = ?
-    `,
-            [idRol]
-        );
-        return rows;
+        // Alternativa 1: usar directly RolMenu
+        const rows = await RolMenu.findAll({
+            where: { idRol },
+        });
+        return rows; // Tendrías que mapear IDs para luego fetch de Menu, etc.
+
+        /*
+      Alternativa 2: usar Rol.findByPk(idRol, { include: Menu })
+      y Sequelize se encarga de la relación N:M
+    */
     },
 
-    // Asociar un menu a un rol
-    addMenuToRol: async (idRol, idmenu) => {
-        await pool.query(
-            `
-      INSERT INTO Rol_menu (idRol, idmenu)
-      VALUES (?, ?)
-    `,
-            [idRol, idmenu]
-        );
+    addMenuToRol: async (idRol, idMenu) => {
+        // Insertar en la tabla pivote
+        return await RolMenu.create({ idRol, idmenu: idMenu });
     },
 
-    // Eliminar la asociación de un menu con un rol
-    removeMenuFromRol: async (idRol, idmenu) => {
-        await pool.query(
-            `
-      DELETE FROM Rol_menu
-      WHERE idRol = ? AND idmenu = ?
-    `,
-            [idRol, idmenu]
-        );
+    removeMenuFromRol: async (idRol, idMenu) => {
+        const rolMenu = await RolMenu.findOne({
+            where: { idRol, idmenu: idMenu },
+        });
+        if (rolMenu) {
+            await rolMenu.destroy();
+            return true;
+        }
+        return false;
     },
 };
 

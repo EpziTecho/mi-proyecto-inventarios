@@ -1,3 +1,4 @@
+// src/services/menu.service.js
 const MenuRepository = require("../repositories/menu.repository");
 
 const MenuService = {
@@ -6,36 +7,19 @@ const MenuService = {
     },
 
     obtenerPorId: async (id) => {
-        const menu = await MenuRepository.getById(id);
-        if (!menu) {
-            throw new Error(`Menu con ID ${id} no encontrado`);
-        }
-        return menu;
+        return await MenuRepository.getById(id);
     },
 
     crear: async (data) => {
-        const { nombre, descripcion } = data;
-        const newId = await MenuRepository.create(nombre, descripcion);
-        return { id: newId, nombre, descripcion };
+        return await MenuRepository.create(data);
     },
 
     actualizar: async (id, data) => {
-        const menuExistente = await MenuRepository.getById(id);
-        if (!menuExistente) {
-            throw new Error(`Menu con ID ${id} no existe`);
-        }
-        const { nombre, descripcion } = data;
-        await MenuRepository.update(id, nombre, descripcion);
-        return { id, nombre, descripcion };
+        return await MenuRepository.update(id, data);
     },
 
     eliminar: async (id) => {
-        const menuExistente = await MenuRepository.getById(id);
-        if (!menuExistente) {
-            throw new Error(`Menu con ID ${id} no existe`);
-        }
-        await MenuRepository.delete(id);
-        return { message: `Menu ${id} eliminado` };
+        return await MenuRepository.delete(id);
     },
 };
 

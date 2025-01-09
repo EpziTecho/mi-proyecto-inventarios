@@ -1,26 +1,24 @@
 // src/server.js
 require("dotenv").config();
 const app = require("./app");
-const { swaggerDocs } = require("./config/swagger");
-const pool = require("./config/database");
-
+const { sequelize } = require("./models"); // <-- importa el index.js de models
 const PORT = process.env.PORT || 3000;
 
 (async () => {
     try {
-        // Test de conexión a la BD
-        const [rows] = await pool.query("SELECT 1 + 1 AS result");
-        console.log("Conexión exitosa a MySQL. Resultado:", rows[0].result);
+        await sequelize.authenticate();
+        console.log("Conexión a MySQL establecida correctamente.");
 
-        // Levantar el servidor
+        // Sincroniza los modelos con la DB
+        // ¡Cuidado con force: true porque BORRARÁ tablas al reiniciar!
+        // Usa alter: true si quieres que modifique sin borrar.
+        await sequelize.sync({ alter: false });
+
         app.listen(PORT, () => {
             console.log(`Servidor corriendo en http://localhost:${PORT}`);
-
-            // Iniciar Swagger Docs
-            swaggerDocs(app, PORT);
         });
     } catch (error) {
-        console.error("Error al conectar a MySQL:", error);
+        console.error("No se pudo conectar a la base de datos:", error);
         process.exit(1);
     }
 })();

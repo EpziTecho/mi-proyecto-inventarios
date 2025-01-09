@@ -1,59 +1,27 @@
-const pool = require("../config/database");
+// src/repositories/rol.repository.js
+const { Rol } = require("../models");
 
 const RolRepository = {
-    // 1) Obtener todos los roles
     getAll: async () => {
-        const [rows] = await pool.query(`
-      SELECT idRol, nombreRol, descripcionRol
-      FROM Rol
-    `);
-        return rows;
+        return await Rol.findAll();
     },
-    // 2) Obtener un rol por su ID
     getById: async (idRol) => {
-        const [rows] = await pool.query(
-            `
-      SELECT idRol, nombreRol, descripcionRol
-      FROM Rol
-      WHERE idRol = ?
-    `,
-            [idRol]
-        );
-        return rows[0] || null;
+        return await Rol.findByPk(idRol);
     },
-
-    // 3) Crear un rol
-    create: async (nombreRol, descripcionRol) => {
-        const [result] = await pool.query(
-            `
-      INSERT INTO Rol (nombreRol, descripcionRol)
-      VALUES (?, ?)
-    `,
-            [nombreRol, descripcionRol]
-        );
-        return result.insertId;
+    create: async (data) => {
+        return await Rol.create(data); // data={ nombreRol, descripcionRol }
     },
-
-    // 4) Actualizar un rol
-    update: async (idRol, nombreRol, descripcionRol) => {
-        await pool.query(
-            `
-      UPDATE Rol
-      SET nombreRol = ?, descripcionRol = ?
-      WHERE idRol = ?
-    `,
-            [nombreRol, descripcionRol, idRol]
-        );
+    update: async (idRol, data) => {
+        const rol = await Rol.findByPk(idRol);
+        if (!rol) return null;
+        await rol.update(data);
+        return rol;
     },
-    // 5) Eliminar un rol
     delete: async (idRol) => {
-        await pool.query(
-            `
-      DELETE FROM Rol
-      WHERE idRol = ?
-    `,
-            [idRol]
-        );
+        const rol = await Rol.findByPk(idRol);
+        if (!rol) return null;
+        await rol.destroy();
+        return rol;
     },
 };
 

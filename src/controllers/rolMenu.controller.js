@@ -14,9 +14,11 @@ const RolMenuController = {
 
     addMenuToRol: async (req, res) => {
         try {
-            const { idRol, idMenu } = req.params; // o desde req.body si prefieres
+            const { idRol, idMenu } = req.params;
             const result = await RolMenuService.agregarMenuARol(idRol, idMenu);
-            return res.status(201).json(result);
+            return res
+                .status(201)
+                .json({ message: "Asociación creada", result });
         } catch (error) {
             console.error(error);
             return res.status(400).json({ error: error.message });
@@ -26,11 +28,8 @@ const RolMenuController = {
     removeMenuFromRol: async (req, res) => {
         try {
             const { idRol, idMenu } = req.params;
-            const result = await RolMenuService.eliminarMenuDeRol(
-                idRol,
-                idMenu
-            );
-            return res.json(result);
+            await RolMenuService.eliminarMenuDeRol(idRol, idMenu);
+            return res.json({ message: "Asociación eliminada" });
         } catch (error) {
             console.error(error);
             return res.status(400).json({ error: error.message });

@@ -4,38 +4,17 @@ const RolService = {
     listar: async () => {
         return await RolRepository.getAll();
     },
-
     obtenerPorId: async (idRol) => {
-        const rol = await RolRepository.getById(idRol);
-        if (!rol) {
-            throw new Error(`Rol con ID ${idRol} no encontrado`);
-        }
-        return rol;
+        return await RolRepository.getById(idRol);
     },
-
     crear: async (data) => {
-        const { nombreRol, descripcionRol } = data;
-        const newId = await RolRepository.create(nombreRol, descripcionRol);
-        return { idRol: newId, nombreRol, descripcionRol };
+        return await RolRepository.create(data);
     },
-
     actualizar: async (idRol, data) => {
-        const rolExistente = await RolRepository.getById(idRol);
-        if (!rolExistente) {
-            throw new Error(`Rol con ID ${idRol} no existe`);
-        }
-        const { nombreRol, descripcionRol } = data;
-        await RolRepository.update(idRol, nombreRol, descripcionRol);
-        return { idRol, nombreRol, descripcionRol };
+        return await RolRepository.update(idRol, data);
     },
-
     eliminar: async (idRol) => {
-        const rolExistente = await RolRepository.getById(idRol);
-        if (!rolExistente) {
-            throw new Error(`Rol con ID ${idRol} no existe`);
-        }
-        await RolRepository.delete(idRol);
-        return { message: `Rol ${idRol} eliminado` };
+        return await RolRepository.delete(idRol);
     },
 };
 

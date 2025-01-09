@@ -1,78 +1,48 @@
-const pool = require("../config/database");
+// src/repositories/vendedor.repository.js
+const { Vendedor, Rol } = require("../models");
 
 const VendedorRepository = {
-    // 1) Obtener todos los vendedores
-
     getAll: async () => {
-        const [rows] = await pool.query(`
-            SELECT 
-              v.idVendedor, 
-              v.nombre, 
-              v.foto, 
-              v.dni, 
-              v.tfno, 
-              v.idRol, 
-              r.nombreRol
-            FROM Vendedor v
-            JOIN Rol r ON v.idRol = r.idRol
-          `);
-        return rows;
+        // Si quieres traer también los datos del Rol, usa "include"
+        return await Vendedor.findAll({
+            include: [
+                {
+                    model: Rol, // Asumes que Vendedor belongsTo(Rol)
+                    attributes: ["idRol", "nombreRol"],
+                },
+            ],
+        });
     },
 
-    // 2) Obtener un vendedor por su ID
     getById: async (idVendedor) => {
-        const [rows] = await pool.query(
-            `
-          SELECT 
-            v.idVendedor, 
-            v.nombre, 
-            v.foto, 
-            v.dni, 
-            v.tfno, 
-            v.idRol, 
-            r.nombreRol
-          FROM Vendedor v
-          JOIN Rol r ON v.idRol = r.idRol
-          WHERE v.idVendedor = ?
-        `,
-            [idVendedor]
-        );
-        return rows[0] || null;
+        return await Vendedor.findByPk(idVendedor, {
+            include: [
+                {
+                    model: Rol,
+                    attributes: ["idRol", "nombreRol"],
+                },
+            ],
+        });
     },
 
-    // 3) Crear un vendedor
-    create: async (nombre, foto, dni, tfno, idRol) => {
-        const [result] = await pool.query(
-            `
-      INSERT INTO Vendedor (nombre, foto, dni, tfno, idRol)
-      VALUES (?, ?, ?, ?, ?)
-    `,
-            [nombre, foto, dni, tfno, idRol]
-        );
-        return result.insertId; // ID autogenerado consultar con hugosama xd :v
+    create: async (data) => {
+        // data = { nombre, foto, dni, tfno, idRol }
+        return await Vendedor.create(data);
     },
 
-    // 4) Actualizar un vendedor
-    update: async (idVendedor, nombre, foto, dni, tfno, idRol) => {
-        await pool.query(
-            `
-      UPDATE Vendedor
-      SET nombre = ?, foto = ?, dni = ?, tfno = ?, idRol = ?
-      WHERE idVendedor = ?
-    `,
-            [nombre, foto, dni, tfno, idRol, idVendedor]
-        );
+    update: async (idVendedor, data) => {
+        // Ej: { nombre, foto, dni, tfno, idRol }
+        const vendedor = await Vendedor.findByPk(idVendedor);
+        if (!vendedor) return null;
+        await vendedor.update(data);
+        return vendedor;
     },
 
-    // 5) Eliminar un vendedor
     delete: async (idVendedor) => {
-        await pool.query(
-            `
-      DELETE FROM Vendedor
-      WHERE idVendedor = ?
-    `,
-            [idVendedor]
-        );
+        const vendedor = await Vendedor.findByPk(idVendedor);
+        if (!vendedor) return null;
+        await vendedor.destroy();
+        return vendedor;
     },
 };
 

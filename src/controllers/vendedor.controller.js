@@ -26,8 +26,8 @@ const VendedorController = {
 
     create: async (req, res) => {
         try {
-            const newVendedor = await VendedorService.crear(req.body);
-            return res.status(201).json(newVendedor);
+            const vendedorCreado = await VendedorService.crear(req.body);
+            return res.status(201).json(vendedorCreado);
         } catch (error) {
             console.error(error);
             return res.status(400).json({ error: error.message });
@@ -49,7 +49,7 @@ const VendedorController = {
         try {
             const { id } = req.params;
             const result = await VendedorService.eliminar(id);
-            return res.json(result);
+            return res.json({ message: `Vendedor ${id} eliminado`, result });
         } catch (error) {
             console.error(error);
             return res.status(404).json({ error: error.message });

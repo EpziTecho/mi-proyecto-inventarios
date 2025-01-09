@@ -2,10 +2,12 @@ const VendedorRepository = require("../repositories/vendedor.repository");
 
 const VendedorService = {
     listar: async () => {
+        // Devuelve la lista de vendedores con su rol asociado (si así lo configuraste en el repo)
         return await VendedorRepository.getAll();
     },
 
     obtenerPorId: async (idVendedor) => {
+        // Busca un vendedor por su ID
         const vendedor = await VendedorRepository.getById(idVendedor);
         if (!vendedor) {
             throw new Error(`Vendedor con ID ${idVendedor} no encontrado`);
@@ -14,43 +16,26 @@ const VendedorService = {
     },
 
     crear: async (data) => {
-        // validacion de data necesaria?
-        const { nombre, foto, dni, tfno, idRol } = data;
-        const newId = await VendedorRepository.create(
-            nombre,
-            foto,
-            dni,
-            tfno,
-            idRol
-        );
-        return { idVendedor: newId, ...data };
+        // data = { nombre, foto, dni, tfno, idRol }
+        const nuevo = await VendedorRepository.create(data);
+        return nuevo;
     },
 
     actualizar: async (idVendedor, data) => {
-        // x2 validacion de data necesaria?
-        const vendedorExistente = await VendedorRepository.getById(idVendedor);
-        if (!vendedorExistente) {
+        // data = { nombre, foto, dni, tfno, idRol }
+        const actualizado = await VendedorRepository.update(idVendedor, data);
+        if (!actualizado) {
             throw new Error(`Vendedor con ID ${idVendedor} no existe`);
         }
-        const { nombre, foto, dni, tfno, idRol } = data;
-        await VendedorRepository.update(
-            idVendedor,
-            nombre,
-            foto,
-            dni,
-            tfno,
-            idRol
-        );
-        return { idVendedor, ...data };
+        return actualizado;
     },
 
     eliminar: async (idVendedor) => {
-        const vendedorExistente = await VendedorRepository.getById(idVendedor);
-        if (!vendedorExistente) {
+        const borrado = await VendedorRepository.delete(idVendedor);
+        if (!borrado) {
             throw new Error(`Vendedor con ID ${idVendedor} no existe`);
         }
-        await VendedorRepository.delete(idVendedor);
-        return { message: `Vendedor ${idVendedor} eliminado` };
+        return borrado;
     },
 };
 
