@@ -1,6 +1,7 @@
+// src/app.js
 const express = require("express");
 const cors = require("cors");
-const routes = require("./routes"); // index.js
+const routes = require("./routes"); // Aquí se importa index.js que ahora exporta el router
 
 const app = express();
 app.use(cors());

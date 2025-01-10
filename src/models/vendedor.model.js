@@ -1,6 +1,7 @@
+// src/models/vendedor.model.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
-const Rol = require("./rol.model"); // Para asociar
+const Rol = require("./rol.model");
 
 const Vendedor = sequelize.define(
     "Vendedor",
@@ -23,7 +24,51 @@ const Vendedor = sequelize.define(
         tfno: {
             type: DataTypes.STRING(20),
         },
-        // En lugar de "idRol INT NOT NULL" en Sequelize se definirá como asociación
+        username: {
+            type: DataTypes.STRING(50),
+            allowNull: false,
+            unique: true,
+        },
+        email: {
+            type: DataTypes.STRING(100),
+            unique: true,
+        },
+        passwordHash: {
+            type: DataTypes.STRING(255),
+            allowNull: false,
+        },
+        passwordSalt: {
+            type: DataTypes.STRING(255),
+        },
+        createdAt: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+        },
+        updatedAt: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+        },
+        lastLogin: {
+            type: DataTypes.DATE,
+        },
+        createdBy: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        updatedBy: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        idRol: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: Rol,
+                key: "idRol",
+            },
+            onDelete: "RESTRICT",
+            onUpdate: "CASCADE",
+        },
     },
     {
         tableName: "Vendedor",
@@ -31,7 +76,6 @@ const Vendedor = sequelize.define(
     }
 );
 
-// Asignación de llaves foráneas usando asociaciones (ver el paso 4)
 Vendedor.belongsTo(Rol, {
     foreignKey: "idRol",
     onDelete: "RESTRICT",

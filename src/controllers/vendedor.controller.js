@@ -1,3 +1,4 @@
+// src/controllers/vendedor.controller.js
 const VendedorService = require("../services/vendedor.service");
 
 const VendedorController = {
@@ -26,8 +27,12 @@ const VendedorController = {
 
     create: async (req, res) => {
         try {
-            const vendedorCreado = await VendedorService.crear(req.body);
-            return res.status(201).json(vendedorCreado);
+            const creatorId = req.user ? req.user.id : null; // Asume que viene de middleware auth
+            const nuevoVendedor = await VendedorService.crear(
+                req.body,
+                creatorId
+            );
+            return res.status(201).json(nuevoVendedor);
         } catch (error) {
             console.error(error);
             return res.status(400).json({ error: error.message });
@@ -37,8 +42,13 @@ const VendedorController = {
     update: async (req, res) => {
         try {
             const { id } = req.params;
-            const updated = await VendedorService.actualizar(id, req.body);
-            return res.json(updated);
+            const updaterId = req.user ? req.user.id : null; // Asume que viene de middleware auth
+            const actualizado = await VendedorService.actualizar(
+                id,
+                req.body,
+                updaterId
+            );
+            return res.json(actualizado);
         } catch (error) {
             console.error(error);
             return res.status(404).json({ error: error.message });
@@ -53,6 +63,17 @@ const VendedorController = {
         } catch (error) {
             console.error(error);
             return res.status(404).json({ error: error.message });
+        }
+    },
+
+    login: async (req, res) => {
+        try {
+            const { username, password } = req.body;
+            const result = await VendedorService.login(username, password);
+            return res.json(result);
+        } catch (error) {
+            console.error(error);
+            return res.status(401).json({ error: error.message });
         }
     },
 };

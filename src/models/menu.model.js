@@ -1,3 +1,4 @@
+// src/models/menu.model.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
@@ -18,7 +19,7 @@ const Menu = sequelize.define(
         },
     },
     {
-        tableName: "menu", // Nombre real de la tabla en tu BD
+        tableName: "menu",
         timestamps: false,
     }
 );

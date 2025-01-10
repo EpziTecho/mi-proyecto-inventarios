@@ -1,11 +1,10 @@
+// src/models/rol.model.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
 const Rol = sequelize.define(
     "Rol",
     {
-        // Sequelize automáticamente asume la tabla 'Rols' si no configuras "tableName",
-        // así que forzamos un tableName para que use la tabla "Rol".
         idRol: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
@@ -17,12 +16,15 @@ const Rol = sequelize.define(
         },
         descripcionRol: {
             type: DataTypes.STRING(100),
-            allowNull: true,
+        },
+        activo: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true,
         },
     },
     {
         tableName: "Rol",
-        timestamps: false, // si tu tabla no tiene createdAt, updatedAt
+        timestamps: false,
     }
 );
 
