@@ -5,6 +5,8 @@ const rolRoutes = require("./rol.routes");
 const menuRoutes = require("./menu.routes");
 const rolMenuRoutes = require("./rolMenu.routes");
 const categoriaRoutes = require("./categoria.routes");
+const proveedorRoutes = require("./proveedor.routes");
+
 const authRoutes = require("./auth.routes");
 
 const router = Router();
@@ -15,6 +17,8 @@ router.use("/roles", rolRoutes);
 router.use("/menus", menuRoutes);
 router.use("/rol-menu", rolMenuRoutes);
 router.use("/categorias", categoriaRoutes);
+router.use("/proveedores", proveedorRoutes);
+
 router.use("/auth", authRoutes);
 
 module.exports = router; // <-- Agrega esta línea para exportar el router
