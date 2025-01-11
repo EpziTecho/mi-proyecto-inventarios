@@ -1,5 +1,6 @@
 // src/services/venta.service.js
 const VentaRepository = require("../repositories/venta.repository");
+const DetalleVentaRepository = require("../repositories/detalle_venta.repository");
 
 const VentaService = {
     listar: async () => {
@@ -12,9 +13,24 @@ const VentaService = {
         return venta;
     },
 
-    crear: async (data, creatorId) => {
-        data.createdBy = creatorId || null;
-        return await VentaRepository.create(data);
+    crear: async (ventaData, productos, creatorId) => {
+        // Crear una sola venta
+        ventaData.createdBy = creatorId || null;
+        const venta = await VentaRepository.create(ventaData);
+
+        // Asociar los productos en la tabla detalle_venta
+        const detalles = await Promise.all(
+            productos.map(async (producto) => {
+                return await DetalleVentaRepository.create({
+                    idVenta: venta.idVenta,
+                    idProducto: producto.idProducto,
+                    cantidad: producto.cantidad,
+                    descuento: producto.descuento || 0,
+                });
+            })
+        );
+
+        return { venta, detalles };
     },
 
     actualizar: async (idVenta, data, updaterId) => {

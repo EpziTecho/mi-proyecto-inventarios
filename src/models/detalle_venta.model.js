@@ -1,4 +1,3 @@
-// src/models/detalle_venta.model.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 const Venta = require("./venta.model");
@@ -34,14 +33,6 @@ const DetalleVenta = sequelize.define(
         descuento: {
             type: DataTypes.DECIMAL(10, 2),
             defaultValue: 0.0,
-        },
-        createdAt: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
-        },
-        updatedAt: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
         },
     },
     {

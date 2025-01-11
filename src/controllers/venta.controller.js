@@ -25,9 +25,14 @@ const VentaController = {
 
     create: async (req, res) => {
         try {
-            const creatorId = req.user ? req.user.id : null; // Suponiendo autenticación
-            const nuevaVenta = await VentaService.crear(req.body, creatorId);
-            res.status(201).json(nuevaVenta);
+            const { productos, ...ventaData } = req.body; // Extraer productos y datos de la venta
+            const creatorId = req.user ? req.user.id : null; // Asume autenticación (opcional)
+            const resultado = await VentaService.crear(
+                ventaData,
+                productos,
+                creatorId
+            );
+            res.status(201).json(resultado);
         } catch (error) {
             console.error(error);
             res.status(400).json({ error: error.message });
@@ -37,7 +42,7 @@ const VentaController = {
     update: async (req, res) => {
         try {
             const { id } = req.params;
-            const updaterId = req.user ? req.user.id : null; // Suponiendo autenticación
+            const updaterId = req.user ? req.user.id : null;
             const actualizada = await VentaService.actualizar(
                 id,
                 req.body,
