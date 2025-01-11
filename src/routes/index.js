@@ -10,6 +10,7 @@ const sucursalRoutes = require("./sucursal.routes");
 const productoRoutes = require("./producto.routes");
 const clienteRoutes = require("./cliente.routes");
 const ventaRoutes = require("./venta.routes");
+const detalleVentaRoutes = require("./detalle_venta.routes");
 
 const authRoutes = require("./auth.routes");
 
@@ -26,6 +27,7 @@ router.use("/sucursales", sucursalRoutes);
 router.use("/productos", productoRoutes);
 router.use("/clientes", clienteRoutes);
 router.use("/ventas", ventaRoutes);
+router.use("/detalle_ventas", detalleVentaRoutes);
 
 router.use("/auth", authRoutes);
 
