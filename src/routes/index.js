@@ -8,6 +8,7 @@ const categoriaRoutes = require("./categoria.routes");
 const proveedorRoutes = require("./proveedor.routes");
 const sucursalRoutes = require("./sucursal.routes");
 const productoRoutes = require("./producto.routes");
+const clienteRoutes = require("./cliente.routes");
 
 const authRoutes = require("./auth.routes");
 
@@ -22,6 +23,7 @@ router.use("/categorias", categoriaRoutes);
 router.use("/proveedores", proveedorRoutes);
 router.use("/sucursales", sucursalRoutes);
 router.use("/productos", productoRoutes);
+router.use("/clientes", clienteRoutes);
 
 router.use("/auth", authRoutes);
 
