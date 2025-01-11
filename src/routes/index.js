@@ -7,6 +7,7 @@ const rolMenuRoutes = require("./rolMenu.routes");
 const categoriaRoutes = require("./categoria.routes");
 const proveedorRoutes = require("./proveedor.routes");
 const sucursalRoutes = require("./sucursal.routes");
+const productoRoutes = require("./producto.routes");
 
 const authRoutes = require("./auth.routes");
 
@@ -20,6 +21,7 @@ router.use("/rol-menu", rolMenuRoutes);
 router.use("/categorias", categoriaRoutes);
 router.use("/proveedores", proveedorRoutes);
 router.use("/sucursales", sucursalRoutes);
+router.use("/productos", productoRoutes);
 
 router.use("/auth", authRoutes);
 
