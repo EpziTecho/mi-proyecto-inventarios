@@ -1,6 +1,5 @@
-// src/models/vendedor.model.js
 const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
+const sequelize = require("../config/database"); // Asegúrate de que esta sea la ruta correcta a tu configuración de Sequelize
 const Rol = require("./rol.model");
 
 const Vendedor = sequelize.define(
@@ -16,13 +15,16 @@ const Vendedor = sequelize.define(
             allowNull: false,
         },
         foto: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.BLOB("long"), // Campo para almacenar imágenes en formato binario
+            allowNull: true,
         },
         dni: {
             type: DataTypes.STRING(20),
+            allowNull: false,
         },
         tfno: {
             type: DataTypes.STRING(20),
+            allowNull: false,
         },
         username: {
             type: DataTypes.STRING(50),
@@ -31,33 +33,12 @@ const Vendedor = sequelize.define(
         },
         email: {
             type: DataTypes.STRING(100),
+            allowNull: false,
             unique: true,
         },
         passwordHash: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.STRING,
             allowNull: false,
-        },
-        passwordSalt: {
-            type: DataTypes.STRING(255),
-        },
-        createdAt: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
-        },
-        updatedAt: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
-        },
-        lastLogin: {
-            type: DataTypes.DATE,
-        },
-        createdBy: {
-            type: DataTypes.INTEGER,
-            allowNull: true,
-        },
-        updatedBy: {
-            type: DataTypes.INTEGER,
-            allowNull: true,
         },
         idRol: {
             type: DataTypes.INTEGER,
@@ -69,6 +50,22 @@ const Vendedor = sequelize.define(
             onDelete: "RESTRICT",
             onUpdate: "CASCADE",
         },
+        createdBy: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        updatedBy: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        createdAt: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+        },
+        updatedAt: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+        },
     },
     {
         tableName: "Vendedor",
@@ -76,13 +73,7 @@ const Vendedor = sequelize.define(
     }
 );
 
-Vendedor.belongsTo(Rol, {
-    foreignKey: "idRol",
-    onDelete: "RESTRICT",
-    onUpdate: "CASCADE",
-});
-Rol.hasMany(Vendedor, {
-    foreignKey: "idRol",
-});
+// Configuración de relaciones
+Vendedor.belongsTo(Rol, { foreignKey: "idRol" });
 
 module.exports = Vendedor;
