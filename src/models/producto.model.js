@@ -1,4 +1,3 @@
-// src/models/producto.model.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 const Categoria = require("./categoria.model");
@@ -15,6 +14,10 @@ const Producto = sequelize.define(
         Nombre: {
             type: DataTypes.STRING(100),
             allowNull: false,
+        },
+        foto: {
+            type: DataTypes.STRING(255), // URL de la foto
+            allowNull: true,
         },
         codigoProducto: {
             type: DataTypes.STRING(50),
@@ -68,6 +71,7 @@ const Producto = sequelize.define(
         },
         fechaRegistro: {
             type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
         },
         fechaRetiro: {
             type: DataTypes.DATE,
