@@ -12,6 +12,11 @@ const VendedorRepository = {
     create: async (data) => {
         return await Vendedor.create(data);
     },
+    findByUsername: async (username) => {
+        return await Vendedor.findOne({
+            where: { username },
+        });
+    },
 
     update: async (id, data) => {
         const vendedor = await Vendedor.findByPk(id);

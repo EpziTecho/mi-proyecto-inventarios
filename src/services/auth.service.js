@@ -1,4 +1,3 @@
-// src/services/auth.service.js
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
@@ -44,11 +43,24 @@ const AuthService = {
         vendedor.lastLogin = new Date();
         await vendedor.save();
 
-        return { accessToken, refreshToken: refreshTokenRaw };
+        // Excluir la contraseña de la respuesta
+        const {
+            passwordHash,
+            createdBy,
+            updatedBy,
+            createdAt,
+            updatedAt,
+            ...userWithoutPassword
+        } = vendedor.toJSON();
+
+        return {
+            accessToken,
+            refreshToken: refreshTokenRaw,
+            user: userWithoutPassword, // Información completa del usuario
+        };
     },
 
     refresh: async (oldRefreshToken) => {
-        // Obtener todos los refresh tokens (en una implementación real, usarías una mejor búsqueda)
         const allTokens = await RefreshTokenRepository.findAll();
         let matchedToken = null;
         for (const tokenEntry of allTokens) {
@@ -83,7 +95,21 @@ const AuthService = {
         matchedToken.expiresAt = newExpiresAt;
         await matchedToken.save();
 
-        return { accessToken, refreshToken: newRefreshTokenRaw };
+        // Excluir la contraseña de la respuesta
+        const {
+            passwordHash,
+            createdBy,
+            updateBy,
+            createdAt,
+            updateAt,
+            ...userWithoutPassword
+        } = vendedor.toJSON();
+
+        return {
+            accessToken,
+            refreshToken: newRefreshTokenRaw,
+            user: userWithoutPassword, // Información completa del usuario
+        };
     },
 
     logout: async (vendedorId) => {

@@ -5,8 +5,19 @@ const AuthController = {
     login: async (req, res) => {
         try {
             const { username, password } = req.body;
-            const tokens = await AuthService.login(username, password);
-            res.json(tokens); // { accessToken, refreshToken }
+            const { accessToken, refreshToken, user } = await AuthService.login(
+                username,
+                password
+            );
+
+            // Excluir passwordHash del usuario antes de enviar la respuesta
+            const { passwordHash, ...userWithoutPassword } = user;
+
+            res.json({
+                accessToken,
+                refreshToken,
+                user: userWithoutPassword, // Información del usuario sin la contraseña
+            });
         } catch (error) {
             console.error(error);
             res.status(401).json({ error: error.message });
