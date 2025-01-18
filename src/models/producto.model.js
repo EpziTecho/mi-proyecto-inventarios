@@ -16,7 +16,7 @@ const Producto = sequelize.define(
             allowNull: false,
         },
         foto: {
-            type: DataTypes.STRING(255), // URL de la foto
+            type: DataTypes.BLOB("long"), // Campo para almacenar imágenes en formato binario
             allowNull: true,
         },
         codigoProducto: {
