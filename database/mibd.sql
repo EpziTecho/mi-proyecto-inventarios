@@ -174,7 +174,7 @@ CREATE TABLE IF NOT EXISTS Venta (
 CREATE TABLE IF NOT EXISTS Producto (
   idProducto INT AUTO_INCREMENT PRIMARY KEY,
   Nombre VARCHAR(100) NOT NULL,
-  foto VARCHAR(255),
+  foto LONGBLOB,
   codigoProducto VARCHAR(50),
   descripcion VARCHAR(255),
   notas VARCHAR(255),
