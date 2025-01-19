@@ -5,19 +5,26 @@ const VendedorController = {
     getAll: async (req, res) => {
         try {
             const vendedores = await VendedorService.listar();
+            // Convertir a JSON y mapear los resultados
             return res.json(
-                vendedores.map((vendedor) => ({
-                    ...vendedor,
-                    foto: vendedor.foto
-                        ? Buffer.from(vendedor.foto, "base64").toString("utf-8")
-                        : null, // Convertir Base64 para el cliente
-                }))
+                vendedores.map((vendedor) => {
+                    const plainVendedor = vendedor.toJSON(); // Convertir a objeto plano
+                    return {
+                        ...plainVendedor,
+                        foto: plainVendedor.foto
+                            ? Buffer.from(
+                                  plainVendedor.foto,
+                                  "base64"
+                              ).toString("utf-8")
+                            : null,
+                    };
+                })
             );
         } catch (error) {
             console.error(error);
             return res
                 .status(500)
-                .json({ error: "Error al obtener vendedores" });
+                .json({ error: "Error al obtener productos" });
         }
     },
 
