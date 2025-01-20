@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database"); // Asegúrate de que esta sea la ruta correcta a tu configuración de Sequelize
+const sequelize = require("../config/database");
 const Rol = require("./rol.model");
 
 const Vendedor = sequelize.define(
@@ -15,7 +15,7 @@ const Vendedor = sequelize.define(
             allowNull: false,
         },
         foto: {
-            type: DataTypes.BLOB("long"), // Campo para almacenar imágenes en formato binario
+            type: DataTypes.STRING,
             allowNull: true,
         },
         dni: {
@@ -73,7 +73,6 @@ const Vendedor = sequelize.define(
     }
 );
 
-// Configuración de relaciones
 Vendedor.belongsTo(Rol, { foreignKey: "idRol" });
 
 module.exports = Vendedor;
