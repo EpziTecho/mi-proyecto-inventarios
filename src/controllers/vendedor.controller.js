@@ -4,6 +4,7 @@ const supabase = require("../config/supabase"); // Importa la configuración de 
 const { v4: uuidv4 } = require("uuid"); // Para generar nombres únicos para las imágenes
 
 const VendedorController = {
+    //este es un comentario de ejemplo
     getAll: async (req, res) => {
         try {
             const vendedores = await VendedorService.listar();
