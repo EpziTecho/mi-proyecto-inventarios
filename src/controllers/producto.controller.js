@@ -4,20 +4,7 @@ const ProductoController = {
     getAll: async (req, res) => {
         try {
             const productos = await ProductoService.listar();
-            return res.json(
-                productos.map((producto) => {
-                    const plainProducto = producto.toJSON();
-                    return {
-                        ...plainProducto,
-                        foto: plainProducto.foto
-                            ? Buffer.from(
-                                  plainProducto.foto,
-                                  "base64"
-                              ).toString("utf-8")
-                            : null,
-                    };
-                })
-            );
+            return res.json(productos);
         } catch (error) {
             console.error(error);
             return res
@@ -30,11 +17,6 @@ const ProductoController = {
         try {
             const { id } = req.params;
             const producto = await ProductoService.obtenerPorId(id);
-            if (producto.foto) {
-                producto.foto = Buffer.from(producto.foto, "base64").toString(
-                    "utf-8"
-                );
-            }
             return res.json(producto);
         } catch (error) {
             console.error(error);
@@ -61,7 +43,7 @@ const ProductoController = {
                 fechaVencimiento,
                 fechaRegistro,
                 fechaRetiro,
-                foto, // Foto en Base64 enviada directamente por el frontend
+                foto, // URL de la imagen enviada directamente por el frontend
             } = req.body;
 
             const nuevoProducto = await ProductoService.crear(
@@ -96,17 +78,14 @@ const ProductoController = {
         try {
             const { id } = req.params;
             const updaterId = req.user ? req.user.id : null;
-            const {
-                foto, // Foto en Base64 enviada directamente por el frontend
-                ...productoData
-            } = req.body;
+            const { foto, ...productoData } = req.body;
 
             const actualizado = await ProductoService.actualizar(
                 id,
                 { ...productoData, foto },
                 updaterId
             );
-            s;
+
             return res.json(actualizado);
         } catch (error) {
             console.error(error);

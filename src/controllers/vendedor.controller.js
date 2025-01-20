@@ -5,25 +5,12 @@ const VendedorController = {
     getAll: async (req, res) => {
         try {
             const vendedores = await VendedorService.listar();
-            return res.json(
-                vendedores.map((vendedor) => {
-                    const plainVendedor = vendedor.toJSON();
-                    return {
-                        ...plainVendedor,
-                        foto: plainVendedor.foto
-                            ? Buffer.from(
-                                  plainVendedor.foto,
-                                  "base64"
-                              ).toString("utf-8")
-                            : null,
-                    };
-                })
-            );
+            return res.json(vendedores);
         } catch (error) {
             console.error(error);
             return res
                 .status(500)
-                .json({ error: "Error al obtener productos" });
+                .json({ error: "Error al obtener vendedores" });
         }
     },
 
@@ -31,11 +18,6 @@ const VendedorController = {
         try {
             const { id } = req.params;
             const vendedor = await VendedorService.obtenerPorId(id);
-            if (vendedor.foto) {
-                vendedor.foto = Buffer.from(vendedor.foto, "base64").toString(
-                    "utf-8"
-                );
-            }
             return res.json(vendedor);
         } catch (error) {
             console.error(error);
@@ -44,7 +26,6 @@ const VendedorController = {
     },
 
     create: async (req, res) => {
-        //console.log(req.body.foto);
         try {
             const creatorId = req.user ? req.user.id : null;
             const {
@@ -74,7 +55,7 @@ const VendedorController = {
                     email,
                     idRol,
                     passwordHash,
-                    foto, // Foto en Base64 enviada directamente por el frontend
+                    foto, // Ahora es una URL enviada desde el frontend
                 },
                 creatorId
             );
@@ -100,7 +81,7 @@ const VendedorController = {
 
             const actualizado = await VendedorService.actualizar(
                 id,
-                { ...req.body, passwordHash, foto }, // Foto en Base64 enviada directamente por el frontend
+                { ...req.body, passwordHash, foto }, // URL actualizada desde el frontend
                 updaterId
             );
             return res.json(actualizado);
