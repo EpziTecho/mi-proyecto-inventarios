@@ -6,18 +6,24 @@ const VendedorController = {
         try {
             const vendedores = await VendedorService.listar();
             return res.json(
-                vendedores.map((vendedor) => ({
-                    ...vendedor,
-                    foto: vendedor.foto
-                        ? Buffer.from(vendedor.foto, "base64").toString("utf-8")
-                        : null, // Convertir Base64 para el cliente
-                }))
+                vendedores.map((vendedor) => {
+                    const plainVendedor = vendedor.toJSON();
+                    return {
+                        ...plainVendedor,
+                        foto: plainVendedor.foto
+                            ? Buffer.from(
+                                  plainVendedor.foto,
+                                  "base64"
+                              ).toString("utf-8")
+                            : null,
+                    };
+                })
             );
         } catch (error) {
             console.error(error);
             return res
                 .status(500)
-                .json({ error: "Error al obtener vendedores" });
+                .json({ error: "Error al obtener productos" });
         }
     },
 
@@ -28,7 +34,7 @@ const VendedorController = {
             if (vendedor.foto) {
                 vendedor.foto = Buffer.from(vendedor.foto, "base64").toString(
                     "utf-8"
-                ); // Convertir Base64 para el cliente
+                );
             }
             return res.json(vendedor);
         } catch (error) {
@@ -38,10 +44,19 @@ const VendedorController = {
     },
 
     create: async (req, res) => {
+        //console.log(req.body.foto);
         try {
-            const creatorId = req.user ? req.user.id : null; // Asume que viene de middleware auth
-            const { nombre, dni, tfno, username, email, password, idRol } =
-                req.body;
+            const creatorId = req.user ? req.user.id : null;
+            const {
+                nombre,
+                dni,
+                tfno,
+                username,
+                email,
+                password,
+                idRol,
+                foto,
+            } = req.body;
 
             if (!password) {
                 throw new Error("La contraseña es obligatoria.");
@@ -49,9 +64,6 @@ const VendedorController = {
 
             // Hashear la contraseña
             const passwordHash = await bcrypt.hash(password, 10);
-
-            // Convertir imagen a Base64
-            const foto = req.file ? req.file.buffer.toString("base64") : null;
 
             const nuevoVendedor = await VendedorService.crear(
                 {
@@ -62,7 +74,7 @@ const VendedorController = {
                     email,
                     idRol,
                     passwordHash,
-                    foto,
+                    foto, // Foto en Base64 enviada directamente por el frontend
                 },
                 creatorId
             );
@@ -77,8 +89,8 @@ const VendedorController = {
     update: async (req, res) => {
         try {
             const { id } = req.params;
-            const updaterId = req.user ? req.user.id : null; // Asume que viene de middleware auth
-            const { password } = req.body;
+            const updaterId = req.user ? req.user.id : null;
+            const { password, foto } = req.body;
 
             // Hashear la contraseña si se envía
             let passwordHash = null;
@@ -86,12 +98,9 @@ const VendedorController = {
                 passwordHash = await bcrypt.hash(password, 10);
             }
 
-            // Convertir imagen a Base64
-            const foto = req.file ? req.file.buffer.toString("base64") : null;
-
             const actualizado = await VendedorService.actualizar(
                 id,
-                { ...req.body, passwordHash, foto },
+                { ...req.body, passwordHash, foto }, // Foto en Base64 enviada directamente por el frontend
                 updaterId
             );
             return res.json(actualizado);
