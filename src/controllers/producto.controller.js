@@ -4,10 +4,9 @@ const ProductoController = {
     getAll: async (req, res) => {
         try {
             const productos = await ProductoService.listar();
-            // Convertir a JSON y mapear los resultados
             return res.json(
                 productos.map((producto) => {
-                    const plainProducto = producto.toJSON(); // Convertir a objeto plano
+                    const plainProducto = producto.toJSON();
                     return {
                         ...plainProducto,
                         foto: plainProducto.foto
@@ -25,16 +24,16 @@ const ProductoController = {
                 .status(500)
                 .json({ error: "Error al obtener productos" });
         }
-    }, // Correcion ejemplo para problemas las referencias circulares en JSON
+    },
 
     getById: async (req, res) => {
         try {
             const { id } = req.params;
             const producto = await ProductoService.obtenerPorId(id);
             if (producto.foto) {
-                producto.foto = Buffer.from(producto.foto)
-                    .toString("base64")
-                    .toString("utf-8"); // Convertir binario a Base64 para el cliente
+                producto.foto = Buffer.from(producto.foto, "base64").toString(
+                    "utf-8"
+                );
             }
             return res.json(producto);
         } catch (error) {
@@ -45,8 +44,7 @@ const ProductoController = {
 
     create: async (req, res) => {
         try {
-            console.log(req.body);
-            const creatorId = req.user ? req.user.id : null; // Si usas autenticación
+            const creatorId = req.user ? req.user.id : null;
             const {
                 Nombre,
                 codigoProducto,
@@ -63,10 +61,8 @@ const ProductoController = {
                 fechaVencimiento,
                 fechaRegistro,
                 fechaRetiro,
+                foto, // Foto en Base64 enviada directamente por el frontend
             } = req.body;
-
-            // Convertir Base64 a binario
-            const foto = req.file ? req.file.buffer.toString("base64") : null;
 
             const nuevoProducto = await ProductoService.crear(
                 {
@@ -99,17 +95,18 @@ const ProductoController = {
     update: async (req, res) => {
         try {
             const { id } = req.params;
-            const updaterId = req.user ? req.user.id : null; // Si usas autenticación
-            const { foto, ...productoData } = req.body;
-
-            // Convertir Base64 a binario
-            const fotoBuffer = foto ? Buffer.from(foto, "base64") : null;
+            const updaterId = req.user ? req.user.id : null;
+            const {
+                foto, // Foto en Base64 enviada directamente por el frontend
+                ...productoData
+            } = req.body;
 
             const actualizado = await ProductoService.actualizar(
                 id,
-                { ...productoData, foto: fotoBuffer },
+                { ...productoData, foto },
                 updaterId
             );
+            s;
             return res.json(actualizado);
         } catch (error) {
             console.error(error);
