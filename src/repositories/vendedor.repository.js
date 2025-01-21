@@ -1,4 +1,5 @@
 const Vendedor = require("../models/vendedor.model");
+const { Op } = require("sequelize");
 
 const VendedorRepository = {
     getAll: async () => {
@@ -12,24 +13,25 @@ const VendedorRepository = {
     create: async (data) => {
         return await Vendedor.create(data);
     },
-    findByUsername: async (username) => {
-        return await Vendedor.findOne({
-            where: { username },
-        });
-    },
 
     update: async (id, data) => {
-        const vendedor = await Vendedor.findByPk(id);
-        if (!vendedor) return null;
-        await vendedor.update(data);
-        return vendedor;
+        return await Vendedor.update(data, { where: { idVendedor: id } });
     },
 
     delete: async (id) => {
-        const vendedor = await Vendedor.findByPk(id);
-        if (!vendedor) return null;
-        await vendedor.destroy();
-        return vendedor;
+        return await Vendedor.destroy({ where: { idVendedor: id } });
+    },
+
+    findByUniqueFields: async (dni, username, email, excludeId = null) => {
+        const conditions = {
+            [Op.or]: [{ dni }, { username }, { email }],
+        };
+
+        if (excludeId) {
+            conditions[Op.and] = [{ idVendedor: { [Op.ne]: excludeId } }];
+        }
+
+        return await Vendedor.findOne({ where: conditions });
     },
 };
 

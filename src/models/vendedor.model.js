@@ -21,6 +21,7 @@ const Vendedor = sequelize.define(
         dni: {
             type: DataTypes.STRING(20),
             allowNull: false,
+            unique: true, // Validación a nivel de base de datos
         },
         tfno: {
             type: DataTypes.STRING(20),
@@ -29,12 +30,17 @@ const Vendedor = sequelize.define(
         username: {
             type: DataTypes.STRING(50),
             allowNull: false,
-            unique: true,
+            unique: true, // Validación a nivel de base de datos
         },
         email: {
             type: DataTypes.STRING(100),
             allowNull: false,
-            unique: true,
+            unique: true, // Validación a nivel de base de datos
+            validate: {
+                isEmail: {
+                    msg: "El correo debe tener un formato válido.",
+                },
+            },
         },
         passwordHash: {
             type: DataTypes.STRING,
