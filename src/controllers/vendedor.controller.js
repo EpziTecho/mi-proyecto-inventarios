@@ -64,7 +64,7 @@ const VendedorController = {
             }
 
             // Obtener la URL pública de la imagen
-            const { data, error: urlError } = supabase.storage
+            const { data, error: urlError } = await supabase.storage
                 .from("Imagenes")
                 .getPublicUrl(fileName);
 
