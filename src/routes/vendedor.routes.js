@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const VendedorController = require("../controllers/vendedor.controller");
 const upload = require("../middlewares/upload.middleware");
-const VendedorMiddleware = require("../middlewares/vendedor.middleware");
+const VendedorMiddleware = require("../middlewares/validateVendedor.middleware");
 
 const router = Router();
 
