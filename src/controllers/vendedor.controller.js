@@ -43,6 +43,7 @@ const VendedorController = {
                 email,
                 passwordHash,
                 idRol,
+                estado: 1,
             };
             await VendedorService.validarCreacion(vendedorData);
 
@@ -88,8 +89,16 @@ const VendedorController = {
         try {
             const { id } = req.params;
             const updaterId = req.user ? req.user.id : null;
-            const { nombre, dni, tfno, username, email, idRol, password } =
-                req.body;
+            const {
+                nombre,
+                dni,
+                tfno,
+                username,
+                email,
+                idRol,
+                password,
+                estado,
+            } = req.body;
             const foto = req.file;
 
             // Paso 1: Validaciones a nivel de servicio
@@ -104,6 +113,7 @@ const VendedorController = {
                 email,
                 idRol,
                 passwordHash,
+                estado,
             };
             await VendedorService.validarActualizacion(id, vendedorData);
 

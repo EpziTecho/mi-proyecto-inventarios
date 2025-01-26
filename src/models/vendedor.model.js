@@ -56,6 +56,11 @@ const Vendedor = sequelize.define(
             onDelete: "RESTRICT",
             onUpdate: "CASCADE",
         },
+        estado: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
         createdBy: {
             type: DataTypes.INTEGER,
             allowNull: true,
