@@ -23,10 +23,27 @@ const generateRefreshToken = () => {
 const AuthService = {
     login: async (username, password) => {
         const vendedor = await VendedorRepository.findByUsername(username);
-        if (!vendedor) throw new Error("Usuario no encontrado");
+        if (!vendedor) {
+            const error = new Error("Usuario no encontrado");
+            error.status = 404; // HTTP status para recurso no encontrado
+            throw error;
+        }
+
+        // Verificar si el estado del usuario es false o 0
+        if (vendedor.estado === false || vendedor.estado === 0) {
+            const error = new Error(
+                "Usuario inactivo. Contacte al administrador."
+            );
+            error.status = 403; // HTTP status para acceso prohibido
+            throw error;
+        }
 
         const match = await bcrypt.compare(password, vendedor.passwordHash);
-        if (!match) throw new Error("Contraseña incorrecta");
+        if (!match) {
+            const error = new Error("Contraseña incorrecta");
+            error.status = 401; // HTTP status para no autorizado
+            throw error;
+        }
 
         const accessToken = generateAccessToken(vendedor);
         const refreshTokenRaw = generateRefreshToken();
