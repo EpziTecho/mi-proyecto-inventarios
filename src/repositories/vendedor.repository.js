@@ -33,6 +33,9 @@ const VendedorRepository = {
 
         return await Vendedor.findOne({ where: conditions });
     },
+    findByUsername: async (username) => {
+        return await Vendedor.findOne({ where: { username } });
+    },
 };
 
 module.exports = VendedorRepository;

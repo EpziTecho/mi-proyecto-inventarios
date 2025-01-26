@@ -86,6 +86,26 @@ const VendedorService = {
             );
         }
     },
+    login: async (username, password) => {
+        const vendedor = await VendedorRepository.findByUsername(username);
+        if (!vendedor) throw new Error("Usuario no encontrado");
+        const match = await bcrypt.compare(password, vendedor.passwordHash);
+        if (!match) throw new Error("Contraseña incorrecta");
+        const token = jwt.sign(
+            {
+                id: vendedor.idVendedor,
+                username: vendedor.username,
+                role: vendedor.idRol,
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
+        );
+        vendedor.lastLogin = new Date();
+        await vendedor.save();
+        return { token };
+        // Aquí agregarías la lógica de autenticación
+        throw new Error("Método login no implementado");
+    },
 };
 
 module.exports = VendedorService;
