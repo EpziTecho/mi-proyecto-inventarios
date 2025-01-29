@@ -15,7 +15,20 @@ const VendedorRepository = {
     },
 
     update: async (id, data) => {
-        return await Vendedor.update(data, { where: { idVendedor: id } });
+        // Primero, actualiza el registro
+        const [affectedRows] = await Vendedor.update(data, {
+            where: { idVendedor: id },
+        });
+
+        // Si no se afectó ninguna fila, lanzar un error
+        if (affectedRows === 0) {
+            throw new Error("No se encontró el vendedor o no hubo cambios");
+        }
+
+        // Después de la actualización, obtenemos el objeto actualizado para que hugito no se moleste xd
+        const vendedorActualizado = await Vendedor.findByPk(id);
+
+        return vendedorActualizado;
     },
 
     delete: async (id) => {
