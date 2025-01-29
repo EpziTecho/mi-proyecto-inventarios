@@ -101,7 +101,12 @@ const VendedorController = {
             } = req.body;
             const foto = req.file;
 
-            // Paso 1: Validaciones a nivel de servicio
+            // Paso 1: Obtener los datos actuales del vendedor antes de actualizar
+            const vendedorActual = await VendedorService.obtenerPorId(id);
+            if (!vendedorActual) {
+                throw new Error("Vendedor no encontrado.");
+            }
+
             const passwordHash = password
                 ? await bcrypt.hash(password, 10)
                 : undefined;
@@ -115,18 +120,39 @@ const VendedorController = {
                 passwordHash,
                 estado,
             };
+
             await VendedorService.validarActualizacion(id, vendedorData);
 
-            // Paso 2: Subir la imagen si es necesario
             let publicURL = null;
+
+            // Paso 2: Si se envía una nueva foto, eliminar la anterior y subir la nueva
             if (foto) {
+                // Extraer el nombre del archivo anterior de la URL de Supabase
+                if (vendedorActual.foto) {
+                    const urlParts = vendedorActual.foto.split("/");
+                    const fileName = urlParts[urlParts.length - 1]; // Extraer el nombre del archivo
+
+                    // Intentar eliminar la imagen anterior en Supabase
+                    const { error: deleteError } = await supabase.storage
+                        .from("Imagenes")
+                        .remove([`MiawareInventarioTest/${fileName}`]);
+
+                    if (deleteError) {
+                        console.error(
+                            "Error al eliminar la imagen anterior:",
+                            deleteError
+                        );
+                    }
+                }
+
+                // Subir la nueva imagen a Supabase
                 const cleanedName = nombre.replace(/\s+/g, "");
                 const extension = foto.originalname.split(".").pop();
-                const fileName = `MiawareInventarioTest/${cleanedName}-${dni}.${extension}`;
+                const newFileName = `MiawareInventarioTest/${cleanedName}-${dni}.${extension}`;
 
                 const { error: uploadError } = await supabase.storage
                     .from("Imagenes")
-                    .upload(fileName, foto.buffer, {
+                    .upload(newFileName, foto.buffer, {
                         contentType: foto.mimetype,
                     });
 
@@ -138,9 +164,10 @@ const VendedorController = {
                     throw new Error("Error al subir la nueva imagen.");
                 }
 
+                // Obtener la nueva URL pública
                 const { data, error: urlError } = await supabase.storage
                     .from("Imagenes")
-                    .getPublicUrl(fileName);
+                    .getPublicUrl(newFileName);
 
                 if (urlError) {
                     console.error("Error al obtener la URL pública:", urlError);
@@ -149,9 +176,9 @@ const VendedorController = {
                 publicURL = data.publicUrl;
             }
 
-            vendedorData.foto = publicURL || undefined;
+            vendedorData.foto = publicURL || vendedorActual.foto;
 
-            // Paso 3: Actualizar el vendedor después de todas las validaciones
+            // Paso 3: Actualizar la base de datos con la nueva URL de la foto
             const actualizado = await VendedorService.actualizar(
                 id,
                 vendedorData,
