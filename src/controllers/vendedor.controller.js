@@ -194,8 +194,42 @@ const VendedorController = {
     remove: async (req, res) => {
         try {
             const { id } = req.params;
+
+            // Obtener los datos del vendedor antes de eliminarlo
+            const vendedorActual = await VendedorService.obtenerPorId(id);
+            if (!vendedorActual) {
+                throw new Error("Vendedor no encontrado.");
+            }
+
+            let fotoEliminada = false;
+
+            // Si el vendedor tiene una foto, eliminarla de Supabase
+            if (vendedorActual.foto) {
+                const urlParts = vendedorActual.foto.split("/");
+                const fileName = urlParts[urlParts.length - 1]; // Extraer el nombre del archivo
+
+                const { error: deleteError } = await supabase.storage
+                    .from("Imagenes")
+                    .remove([`MiawareInventarioTest/${fileName}`]);
+
+                if (deleteError) {
+                    console.error(
+                        "❌ Error al eliminar la imagen:",
+                        deleteError
+                    );
+                } else {
+                    fotoEliminada = true;
+                }
+            }
+
+            // Eliminar el vendedor de la base de datos
             const result = await VendedorService.eliminar(id);
-            return res.json({ message: `Vendedor ${id} eliminado`, result });
+
+            return res.json({
+                message: `Vendedor ${id} eliminado`,
+                vendedorEliminado: result === 1,
+                imagenEliminada: fotoEliminada,
+            });
         } catch (error) {
             console.error(error);
             return res.status(404).json({ error: error.message });
