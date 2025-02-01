@@ -26,5 +26,7 @@ router.put(
 router.delete("/multiRemove", VendedorController.multiRemove);
 //Ruta para eliminar un vendedor
 router.delete("/:id", VendedorController.remove);
+//Ruta para exportar a excel
+router.post("/exportExcel", VendedorController.exportExcel);
 
 module.exports = router;

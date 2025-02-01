@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const VendedorService = require("../services/vendedor.service");
 const supabase = require("../config/supabase");
+const excel = require("xlsx");
 
 const VendedorController = {
     getAll: async (req, res) => {
@@ -285,6 +286,88 @@ const VendedorController = {
                 message: `${ids.length} vendedores eliminados correctamente`,
                 vendedoresEliminados: resultadoEliminacion,
                 imagenesEliminadas: imagenesEliminadas,
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(400).json({ error: error.message });
+        }
+    },
+    // Método para exportar a Excel
+    exportExcel: async (req, res) => {
+        try {
+            const { atributos } = req.body; // Recibir los atributos que se desean incluir
+
+            if (!Array.isArray(atributos) || atributos.length === 0) {
+                throw new Error(
+                    "Debe proporcionar una lista de atributos válida."
+                );
+            }
+
+            // Obtener todos los vendedores
+            const vendedores = await VendedorService.listar();
+
+            if (!vendedores || vendedores.length === 0) {
+                throw new Error("No hay datos disponibles para exportar.");
+            }
+
+            // Filtrar solo los atributos seleccionados
+            const data = vendedores.map((vendedor) => {
+                let fila = {};
+                atributos.forEach((atributo) => {
+                    if (vendedor[atributo] !== undefined) {
+                        fila[atributo] = vendedor[atributo];
+                    }
+                });
+                return fila;
+            });
+
+            // Crear hoja de cálculo
+            const ws = excel.utils.json_to_sheet(data);
+            const wb = excel.utils.book_new();
+            excel.utils.book_append_sheet(wb, ws, "Vendedores");
+
+            // Guardar en un buffer
+            const buffer = excel.write(wb, {
+                bookType: "xlsx",
+                type: "buffer",
+            });
+
+            // Configurar la respuesta HTTP para descargar el archivo
+            res.setHeader(
+                "Content-Disposition",
+                "attachment; filename=Reporte_vendedores.xlsx"
+            );
+            res.setHeader(
+                "Content-Type",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            );
+            res.send(buffer);
+        } catch (error) {
+            console.error(error);
+            return res.status(400).json({ error: error.message });
+        }
+    },
+    statusChange: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { estado } = req.body;
+
+            if (estado === undefined) {
+                throw new Error("Debe proporcionar el nuevo estado.");
+            }
+
+            // Validar que el vendedor existe
+            const vendedor = await VendedorService.obtenerPorId(id);
+            if (!vendedor) {
+                throw new Error("Vendedor no encontrado.");
+            }
+
+            // Actualizar solo el estado
+            await VendedorService.actualizar(id, { estado });
+
+            return res.json({
+                message: "Estado actualizado con éxito",
+                estado,
             });
         } catch (error) {
             console.error(error);
