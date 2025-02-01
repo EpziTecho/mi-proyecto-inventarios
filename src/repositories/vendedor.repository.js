@@ -49,6 +49,13 @@ const VendedorRepository = {
     findByUsername: async (username) => {
         return await Vendedor.findOne({ where: { username } });
     },
+    getByIds: async (ids) => {
+        return await Vendedor.findAll({ where: { idVendedor: ids } });
+    },
+
+    deleteMultiple: async (ids) => {
+        return await Vendedor.destroy({ where: { idVendedor: ids } });
+    },
 };
 
 module.exports = VendedorRepository;

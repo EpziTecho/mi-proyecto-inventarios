@@ -235,6 +235,62 @@ const VendedorController = {
             return res.status(404).json({ error: error.message });
         }
     },
+    multiRemove: async (req, res) => {
+        try {
+            const { ids } = req.body; // Lista de IDs de vendedores a eliminar
+
+            if (!Array.isArray(ids) || ids.length === 0) {
+                throw new Error("Debe proporcionar una lista de IDs válida.");
+            }
+
+            // Paso 1: Obtener los vendedores y sus fotos antes de eliminarlos
+            const vendedores = await VendedorService.obtenerPorIds(ids);
+
+            if (vendedores.length === 0) {
+                throw new Error("No se encontraron vendedores para eliminar.");
+            }
+
+            // Paso 2: Extraer los nombres de las imágenes de Supabase
+            const archivosAEliminar = vendedores
+                .filter((v) => v.foto) // Solo considerar vendedores con fotos
+                .map((v) => {
+                    const urlParts = v.foto.split("/");
+                    return `MiawareInventarioTest/${
+                        urlParts[urlParts.length - 1]
+                    }`;
+                });
+
+            // Paso 3: Eliminar los vendedores de la base de datos
+            const resultadoEliminacion =
+                await VendedorService.eliminarMultiples(ids);
+
+            // Paso 4: Eliminar imágenes en Supabase (solo si hay archivos a eliminar)
+            let imagenesEliminadas = false;
+            if (archivosAEliminar.length > 0) {
+                const { error: deleteError } = await supabase.storage
+                    .from("Imagenes")
+                    .remove(archivosAEliminar);
+
+                if (deleteError) {
+                    console.error(
+                        "❌ Error al eliminar algunas imágenes:",
+                        deleteError
+                    );
+                } else {
+                    imagenesEliminadas = true;
+                }
+            }
+
+            return res.json({
+                message: `${ids.length} vendedores eliminados correctamente`,
+                vendedoresEliminados: resultadoEliminacion,
+                imagenesEliminadas: imagenesEliminadas,
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(400).json({ error: error.message });
+        }
+    },
 };
 
 module.exports = VendedorController;

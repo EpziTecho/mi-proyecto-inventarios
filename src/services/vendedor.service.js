@@ -142,8 +142,16 @@ const VendedorService = {
         vendedor.lastLogin = new Date();
         await vendedor.save();
         return { token };
-        // Aquí agregarías la lógica de autenticación
+
         throw new Error("Método login no implementado");
+    },
+    // Método para obtener vendedores por sus IDs
+    obtenerPorIds: async (ids) => {
+        return await VendedorRepository.getByIds(ids);
+    },
+    // Método para eliminar múltiples vendedores
+    eliminarMultiples: async (ids) => {
+        return await VendedorRepository.deleteMultiple(ids);
     },
 };
 
