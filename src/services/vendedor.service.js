@@ -153,6 +153,22 @@ const VendedorService = {
     eliminarMultiples: async (ids) => {
         return await VendedorRepository.deleteMultiple(ids);
     },
+    //Método para cambiar el estado de un vendedor con toggleSwitch
+    toggleEstado: async (id) => {
+        // Obtener el vendedor actual
+        const vendedor = await VendedorRepository.getById(id);
+        if (!vendedor) {
+            throw new Error("Vendedor no encontrado.");
+        }
+
+        // Alternar el estado
+        const nuevoEstado = !vendedor.estado;
+
+        // Actualizar el estado en la base de datos
+        await VendedorRepository.update(id, { estado: nuevoEstado });
+
+        return { id, estado: nuevoEstado };
+    },
 };
 
 module.exports = VendedorService;

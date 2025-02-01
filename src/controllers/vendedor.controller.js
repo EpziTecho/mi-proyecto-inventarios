@@ -347,27 +347,17 @@ const VendedorController = {
             return res.status(400).json({ error: error.message });
         }
     },
-    statusChange: async (req, res) => {
+    //Método para cambiar el estado de un vendedor por id
+    toggleEstado: async (req, res) => {
         try {
             const { id } = req.params;
-            const { estado } = req.body;
 
-            if (estado === undefined) {
-                throw new Error("Debe proporcionar el nuevo estado.");
-            }
-
-            // Validar que el vendedor existe
-            const vendedor = await VendedorService.obtenerPorId(id);
-            if (!vendedor) {
-                throw new Error("Vendedor no encontrado.");
-            }
-
-            // Actualizar solo el estado
-            await VendedorService.actualizar(id, { estado });
+            // Alternar el estado
+            const resultado = await VendedorService.toggleEstado(id);
 
             return res.json({
-                message: "Estado actualizado con éxito",
-                estado,
+                message: "Estado cambiado con éxito",
+                vendedor: resultado,
             });
         } catch (error) {
             console.error(error);
