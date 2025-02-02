@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const VendedorService = require("../services/vendedor.service");
 const supabase = require("../config/supabase");
 const excel = require("xlsx");
+const { generateVendedoresPDF } = require("../utils/pdfGenerator");
 
 const VendedorController = {
     getAll: async (req, res) => {
@@ -361,6 +362,22 @@ const VendedorController = {
             });
         } catch (error) {
             console.error(error);
+            return res.status(400).json({ error: error.message });
+        }
+    },
+
+    //Método para exportar a pdf
+    exportPDF: async (req, res) => {
+        try {
+            const { atributos } = req.body;
+            if (!Array.isArray(atributos) || atributos.length === 0) {
+                throw new Error(
+                    "Debe proporcionar una lista de atributos válida."
+                );
+            }
+            await generateVendedoresPDF(res, atributos);
+        } catch (error) {
+            console.error("❌ Error al generar el PDF:", error.message);
             return res.status(400).json({ error: error.message });
         }
     },

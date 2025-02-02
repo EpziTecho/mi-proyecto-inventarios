@@ -30,5 +30,6 @@ router.delete("/:id", VendedorController.remove);
 router.post("/exportExcel", VendedorController.exportExcel);
 //Ruta para alternar el estado del vendedor
 router.patch("/estado/:id", VendedorController.toggleEstado);
-
+//Ruta para exportar a pdf
+router.post("/exportPDF", VendedorController.exportPDF);
 module.exports = router;
