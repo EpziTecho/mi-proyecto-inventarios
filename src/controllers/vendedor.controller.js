@@ -239,21 +239,28 @@ const VendedorController = {
     },
     multiRemove: async (req, res) => {
         try {
-            const { ids } = req.body; // Lista de IDs de vendedores a eliminar
+            const { vendedores } = req.body; // Array de objetos con la propiedad "id"
 
-            if (!Array.isArray(ids) || ids.length === 0) {
-                throw new Error("Debe proporcionar una lista de IDs válida.");
+            if (!Array.isArray(vendedores) || vendedores.length === 0) {
+                throw new Error(
+                    "Debe proporcionar una lista de vendedores válida."
+                );
             }
 
-            // Paso 1: Obtener los vendedores y sus fotos antes de eliminarlos
-            const vendedores = await VendedorService.obtenerPorIds(ids);
+            // Extraer los IDs de los objetos en el array
+            const ids = vendedores.map((v) => v.id);
 
-            if (vendedores.length === 0) {
+            // Paso 1: Obtener los vendedores y sus fotos antes de eliminarlos
+            const vendedoresAEliminar = await VendedorService.obtenerPorIds(
+                ids
+            );
+
+            if (vendedoresAEliminar.length === 0) {
                 throw new Error("No se encontraron vendedores para eliminar.");
             }
 
             // Paso 2: Extraer los nombres de las imágenes de Supabase
-            const archivosAEliminar = vendedores
+            const archivosAEliminar = vendedoresAEliminar
                 .filter((v) => v.foto) // Solo considerar vendedores con fotos
                 .map((v) => {
                     const urlParts = v.foto.split("/");

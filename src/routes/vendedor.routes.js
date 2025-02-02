@@ -23,7 +23,7 @@ router.put(
     VendedorController.update
 );
 // Ruta para eliminar múltiples vendedores
-router.delete("/multiRemove", VendedorController.multiRemove);
+router.post("/multiRemove", VendedorController.multiRemove);
 //Ruta para eliminar un vendedor
 router.delete("/:id", VendedorController.remove);
 //Ruta para exportar a excel
