@@ -44,7 +44,7 @@ const VendedorController = {
                 username,
                 email,
                 passwordHash,
-                idRol,
+                idRol: Number(idRol), // Convertir a numero si la respuesta es un string y se quiere un número.
                 estado: 1,
             };
             await VendedorService.validarCreacion(vendedorData);
@@ -80,6 +80,7 @@ const VendedorController = {
                 vendedorData,
                 creatorId
             );
+
             return res.status(201).json(nuevoVendedor);
         } catch (error) {
             console.error(error);
